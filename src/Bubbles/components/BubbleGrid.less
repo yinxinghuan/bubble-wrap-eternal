@@ -1,0 +1,138 @@
+.bw-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  padding: 4px;
+  gap: 0;
+  touch-action: none;
+  contain: layout paint style;
+
+  &__slot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.bw-cell {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: calc(100% * var(--scale));
+  height: calc(100% * var(--scale));
+  transform: translate(calc(var(--jx, 0) * 8%), calc(var(--jy, 0) * 8%));
+  pointer-events: auto;
+  cursor: pointer;
+
+  &__skin {
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    background:
+      radial-gradient(60% 60% at 30% 30%, hsla(var(--hue), 60%, 92%, 0.55), hsla(var(--hue), 60%, 78%, 0.18) 60%, transparent 75%),
+      radial-gradient(100% 100% at 65% 70%, hsla(var(--hue), 45%, 60%, 0.18), transparent 70%),
+      linear-gradient(180deg, hsla(var(--hue), 50%, 78%, 0.22), hsla(var(--hue), 50%, 60%, 0.32));
+    box-shadow:
+      inset 0 -3px 6px hsla(var(--hue), 30%, 30%, 0.35),
+      inset 0 2px 1px hsla(var(--hue), 80%, 95%, 0.55),
+      0 1px 3px hsla(var(--hue), 30%, 8%, 0.45),
+      0 0 0 1px hsla(var(--hue), 30%, 22%, 0.35);
+    transform-origin: center;
+    transition: transform 90ms ease, box-shadow 180ms ease;
+    will-change: transform;
+  }
+
+  &__hi {
+    position: absolute;
+    width: 32%;
+    height: 22%;
+    left: 22%;
+    top: 18%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255,255,255,0.92), transparent 75%);
+    filter: blur(0.5px);
+    pointer-events: none;
+  }
+
+  &__sheen {
+    position: absolute;
+    width: 14%;
+    height: 8%;
+    left: 60%;
+    top: 64%;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    pointer-events: none;
+    transform: rotate(-22deg);
+  }
+
+  &__splash {
+    position: absolute;
+    inset: 6%;
+    pointer-events: none;
+    span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 5px;
+      height: 5px;
+      margin: -2.5px;
+      border-radius: 50%;
+      background: hsla(var(--hue), 70%, 85%, 0.9);
+      opacity: 0;
+      transform: translate(0, 0) scale(0.6);
+    }
+  }
+
+  // ── Pressed feedback (still un-popped) ──────────────────────────────
+  &:not(.is-popped):active .bw-cell__skin {
+    transform: scale(0.92);
+    box-shadow:
+      inset 0 -2px 4px hsla(var(--hue), 30%, 30%, 0.5),
+      inset 0 2px 1px hsla(var(--hue), 80%, 95%, 0.65),
+      0 0 0 1px hsla(var(--hue), 30%, 22%, 0.45);
+  }
+
+  // ── Popped state ────────────────────────────────────────────────────
+  &.is-popped {
+    cursor: default;
+    pointer-events: none;
+    .bw-cell__skin {
+      animation: bw-skin-pop 360ms cubic-bezier(.2,.7,.3,1) forwards;
+    }
+    .bw-cell__splash span {
+      animation: bw-splash 480ms cubic-bezier(.2,.7,.3,1) forwards;
+    }
+    .bw-cell__splash span:nth-child(1) { --dx:  18px; --dy: -16px; }
+    .bw-cell__splash span:nth-child(2) { --dx: -20px; --dy: -8px;  animation-delay: 20ms; }
+    .bw-cell__splash span:nth-child(3) { --dx:  -6px; --dy: -22px; animation-delay: 30ms; }
+    .bw-cell__splash span:nth-child(4) { --dx:  22px; --dy:  10px; animation-delay: 10ms; }
+    .bw-cell__splash span:nth-child(5) { --dx: -14px; --dy:  18px; animation-delay: 50ms; }
+    .bw-cell__splash span:nth-child(6) { --dx:   4px; --dy:  22px; animation-delay: 40ms; }
+  }
+
+  // Spawn-in (refilled cells get a fresh id → animation re-runs)
+  &:not(.is-popped) .bw-cell__skin {
+    animation: bw-skin-in 380ms cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+}
+
+@keyframes bw-skin-in {
+  0%   { transform: scale(0.0); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bw-skin-pop {
+  0%   { transform: scale(1); opacity: 1; }
+  35%  { transform: scale(1.18); opacity: 0.9; box-shadow: 0 0 16px hsla(var(--hue), 80%, 70%, 0.5); }
+  100% { transform: scale(0.55); opacity: 0; }
+}
+
+@keyframes bw-splash {
+  0%   { transform: translate(0,0) scale(0.6); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.2); opacity: 0; }
+}
