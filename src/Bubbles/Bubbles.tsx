@@ -6,6 +6,7 @@ import './Bubbles.less';
 import BubbleGrid from './components/BubbleGrid';
 import Pocket from './components/Pocket';
 import Wall from './components/Wall';
+import SlipDetail from './components/SlipDetail';
 import SlipOverlay from './components/SlipOverlay';
 import { useBubbles } from './hooks/useBubbles';
 import { useFortunes } from './hooks/useFortunes';
@@ -21,6 +22,9 @@ import {
   hapticTap,
 } from './utils/audio';
 import { t } from './i18n';
+import { threadFor } from '@shared/social/guestbook';
+import { telegramId } from '@shared/runtime';
+import type { Fortune, WallFortune } from './types';
 
 const FORTUNE_CADENCE = 8;
 
@@ -45,6 +49,7 @@ export default function Bubbles() {
   );
   const wall = useWall(fortunes);
   const [wallOpen, setWallOpen] = useState(false);
+  const [detail, setDetail] = useState<Fortune | WallFortune | null>(null);
 
   useEffect(() => { installGlobalTapFeedback(); }, []);
 
@@ -123,7 +128,23 @@ export default function Bubbles() {
         onClose={() => setWallOpen(false)}
         entries={wall.entries}
         mine={fortunes}
+        onOpenSlip={(f) => setDetail(f)}
       />
+
+      {detail && (
+        <SlipDetail
+          fortune={detail}
+          thread={threadFor(
+            detail.id,
+            wall.messagesByTarget,
+            wall.myMessages,
+            telegramId ?? undefined,
+          )}
+          selfUserId={telegramId ?? undefined}
+          onSend={(text) => wall.sendMessage(detail, text)}
+          onClose={() => setDetail(null)}
+        />
+      )}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import type { GuestMessage } from '@shared/social/guestbook';
+
 export type Bubble = {
   id: string;          // stable per-cell; lets refill keep React keys
   row: number;
@@ -20,4 +22,12 @@ export type WallFortune = Fortune & {
   userId: string;
   userName: string;
   userAvatarUrl?: string;
+};
+
+/** The per-user save blob. Carries both the player's recent fortunes (for the
+ *  wall) AND any guestbook notes they've left on others' fortunes. Persisted
+ *  as a single object so a publish never wipes the other half. */
+export type BubbleSave = {
+  fortunes: Fortune[];
+  messages?: GuestMessage[];
 };

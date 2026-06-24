@@ -13,9 +13,10 @@ export type WallProps = {
   onClose: () => void;
   entries: WallFortune[];
   mine: Fortune[];
+  onOpenSlip: (fortune: Fortune | WallFortune) => void;
 };
 
-export default function Wall({ open, onClose, entries, mine }: WallProps) {
+export default function Wall({ open, onClose, entries, mine, onOpenSlip }: WallProps) {
   const [tab, setTab] = useState<Tab>('today');
   if (!open) return null;
   const list = tab === 'today' ? entries : mine;
@@ -52,6 +53,7 @@ export default function Wall({ open, onClose, entries, mine }: WallProps) {
                 key={`${f.id}-${i}`}
                 className="bw-wall__slip"
                 style={{ '--rot': `${(i % 2 === 0 ? -1 : 1) * (1 + (i % 3) * 0.6)}deg` } as React.CSSProperties}
+                onClick={() => onOpenSlip(f)}
               >
                 <div className="bw-wall__paper">
                   <span className="bw-wall__text">{f.text}</span>
@@ -61,7 +63,7 @@ export default function Wall({ open, onClose, entries, mine }: WallProps) {
                     <button
                       type="button"
                       className="bw-wall__chip"
-                      onClick={() => isInAigram && openAigramProfile(author.userId)}
+                      onClick={(e) => { e.stopPropagation(); isInAigram && openAigramProfile(author.userId); }}
                     >
                       {author.userAvatarUrl ? (
                         <img className="bw-wall__avatar" src={author.userAvatarUrl} alt="" draggable={false} />
