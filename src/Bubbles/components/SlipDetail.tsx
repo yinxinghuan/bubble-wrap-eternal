@@ -11,6 +11,8 @@ import { timeAgo, type GuestMessage } from '@shared/social/guestbook';
 import { openAigramProfile, isInAigram } from '@shared/runtime';
 import { t, locale } from '../i18n';
 
+const ALTERU_APP_URL = 'https://apps.apple.com/app/id6769646546';
+
 export type SlipDetailProps = {
   fortune: Fortune | WallFortune;
   /** Notes on this fortune (wall ∪ my own, oldest-first). */
@@ -71,7 +73,12 @@ export default function SlipDetail({ fortune, thread, selfUserId, onSend, onClos
           {isInAigram ? (
             <Compose onSend={onSend} />
           ) : (
-            <div className="bw-notes__empty">{t('notes.signedout')}</div>
+            <div className="bw-notes__empty bw-notes__download">
+              <span>{t('notes.signedout')}</span>
+              <a href={ALTERU_APP_URL} target="_blank" rel="noopener noreferrer">
+                {t('notes.download')}
+              </a>
+            </div>
           )}
         </div>
       </div>
