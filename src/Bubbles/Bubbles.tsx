@@ -23,7 +23,7 @@ import {
 } from './utils/audio';
 import { t } from './i18n';
 import { threadFor } from '@shared/social/guestbook';
-import { telegramId } from '@shared/runtime';
+import { getTelegramId } from '@shared/runtime';
 import type { Fortune, WallFortune } from './types';
 
 const FORTUNE_CADENCE = 8;
@@ -138,9 +138,9 @@ export default function Bubbles() {
             detail.id,
             wall.messagesByTarget,
             wall.myMessages,
-            telegramId ?? undefined,
+            getTelegramId()! ?? undefined,
           )}
-          selfUserId={telegramId ?? undefined}
+          selfUserId={getTelegramId()! ?? undefined}
           onSend={(text) => wall.sendMessage(detail, text)}
           onClose={() => setDetail(null)}
         />

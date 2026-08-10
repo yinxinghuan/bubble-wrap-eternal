@@ -7,8 +7,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   callAigramAPI,
-  isInAigram,
-  telegramId,
+  isInAigramNow,
+  getTelegramId,
   type AigramResponse,
 } from '@shared/runtime';
 import { getGameUuid } from '@shared/runtime';
@@ -76,7 +76,7 @@ export function useWall(mineFortunes: Fortune[]) {
 
   const refresh = useCallback(async () => {
     const sessionId = getGameUuid();
-    if (!isInAigram || !sessionId) {
+    if (!isInAigramNow() || !sessionId) {
       setLoaded(true);
       return;
     }
@@ -98,7 +98,7 @@ export function useWall(mineFortunes: Fortune[]) {
             avatar: r.head_url || r.user_avatar_url || undefined,
           });
         }
-        if (r.user_id === telegramId) continue; // self renders from local
+        if (r.user_id === getTelegramId()!) continue; // self renders from local
         let payload: BubbleSave;
         try { payload = JSON.parse(r.resource_data) as BubbleSave; }
         catch (_) { continue; }
@@ -144,7 +144,7 @@ export function useWall(mineFortunes: Fortune[]) {
   // everyone's) and ping the author once per target per session. Skip self.
   const noteNotified = useRef<Set<string>>(new Set());
   const sendMessage = useCallback((fortune: Fortune | WallFortune, text: string) => {
-    const authorId = 'userId' in fortune ? (fortune as WallFortune).userId : telegramId || undefined;
+    const authorId = 'userId' in fortune ? (fortune as WallFortune).userId : getTelegramId()! || undefined;
     const msg = newMessage(fortune.id, authorId, text);
     if (!msg) return;
     setMirror(prev => {
@@ -153,7 +153,7 @@ export function useWall(mineFortunes: Fortune[]) {
       return next;
     });
 
-    const selfId = telegramId || 'self';
+    const selfId = getTelegramId()! || 'self';
     if (authorId && authorId !== selfId && !noteNotified.current.has(fortune.id)) {
       noteNotified.current.add(fortune.id);
       events.trigger(

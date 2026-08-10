@@ -8,7 +8,7 @@ import { useState } from 'react';
 import './SlipDetail.less';
 import type { Fortune, WallFortune } from '../types';
 import { timeAgo, type GuestMessage } from '@shared/social/guestbook';
-import { openAigramProfile, isInAigram } from '@shared/runtime';
+import { openAigramProfile, isInAigramNow } from '@shared/runtime';
 import { t, locale } from '../i18n';
 
 const ALTERU_APP_URL = 'https://apps.apple.com/app/id6769646546';
@@ -40,8 +40,8 @@ export default function SlipDetail({ fortune, thread, selfUserId, onSend, onClos
             <button
               type="button"
               className="bw-slip__author"
-              onClick={() => isInAigram && openAigramProfile(author.userId)}
-              disabled={!isInAigram}
+              onClick={() => isInAigramNow() && openAigramProfile(author.userId)}
+              disabled={!isInAigramNow()}
             >
               {author.userAvatarUrl ? (
                 <img className="bw-slip__avatar" src={author.userAvatarUrl} alt="" draggable={false} />
@@ -70,7 +70,7 @@ export default function SlipDetail({ fortune, thread, selfUserId, onSend, onClos
           ) : (
             <div className="bw-notes__empty">{t('notes.empty')}</div>
           )}
-          {isInAigram ? (
+          {isInAigramNow() ? (
             <Compose onSend={onSend} />
           ) : (
             <div className="bw-notes__empty bw-notes__download">
@@ -91,7 +91,7 @@ function NoteRow({ msg, selfUserId }: { msg: GuestMessage; selfUserId?: string }
   const mine = !!msg.fromUserId && msg.fromUserId === selfUserId;
   const name = mine ? t('wall.you') : (msg.userName || 'someone');
   const initial = (msg.userName || '?').slice(0, 1).toUpperCase();
-  const tappable = !mine && !!msg.fromUserId && isInAigram;
+  const tappable = !mine && !!msg.fromUserId && isInAigramNow();
   const head = (
     <span className="bw-note__head">
       {msg.userAvatarUrl ? (

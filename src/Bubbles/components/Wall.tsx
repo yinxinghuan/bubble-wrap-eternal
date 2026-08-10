@@ -4,7 +4,7 @@ import { useState } from 'react';
 import './Wall.less';
 import type { Fortune, WallFortune } from '../types';
 import { t } from '../i18n';
-import { openAigramProfile, isInAigram } from '@shared/runtime';
+import { openAigramProfile, isInAigramNow } from '@shared/runtime';
 
 type Tab = 'today' | 'mine';
 
@@ -63,7 +63,7 @@ export default function Wall({ open, onClose, entries, mine, onOpenSlip }: WallP
                     <button
                       type="button"
                       className="bw-wall__chip"
-                      onClick={(e) => { e.stopPropagation(); isInAigram && openAigramProfile(author.userId); }}
+                      onClick={(e) => { e.stopPropagation(); isInAigramNow() && openAigramProfile(author.userId); }}
                     >
                       {author.userAvatarUrl ? (
                         <img className="bw-wall__avatar" src={author.userAvatarUrl} alt="" draggable={false} />
