@@ -14,7 +14,7 @@ const POCKET_CAP  = 24;
 
 function loadFortunes(): Fortune[] {
   try {
-    const raw = localStorage.getItem(LS_FORTUNES);
+    const raw = alteruLocalStorage.getItem(LS_FORTUNES);
     if (!raw) return [];
     const arr = JSON.parse(raw) as Fortune[];
     if (!Array.isArray(arr)) return [];
@@ -26,7 +26,7 @@ function loadFortunes(): Fortune[] {
 
 function loadCounter(): number {
   try {
-    const raw = localStorage.getItem(LS_COUNTER);
+    const raw = alteruLocalStorage.getItem(LS_COUNTER);
     const n = raw ? parseInt(raw, 10) : 0;
     return Number.isFinite(n) && n >= 0 ? n : 0;
   } catch (_) {
@@ -48,11 +48,11 @@ export function useFortunes(cadence: number, onNewFortune?: (f: Fortune) => void
 
   const persistFortunes = (next: Fortune[]) => {
     setFortunes(next);
-    try { localStorage.setItem(LS_FORTUNES, JSON.stringify(next)); } catch (_) {}
+    try { alteruLocalStorage.setItem(LS_FORTUNES, JSON.stringify(next)); } catch (_) {}
   };
   const persistCounter = (next: number) => {
     setCounter(next);
-    try { localStorage.setItem(LS_COUNTER, String(next)); } catch (_) {}
+    try { alteruLocalStorage.setItem(LS_COUNTER, String(next)); } catch (_) {}
   };
 
   const onPop = useCallback(async () => {
